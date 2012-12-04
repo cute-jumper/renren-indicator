@@ -74,7 +74,8 @@ class RenrenIndicator(object):
                 title = article.h3.get_text(strip=True)
                 description = ''
                 for div in article.find_all('div'):
-                    if 'content-main' in div.get('class', []) or 'content-main-big' in div.get('class', []):
+                    attr = div.get('class', None)
+                    if attr and ('content-main' in attr or 'content-main-big' in attr or 'rich-content-new' in attr):
                         description = div.get_text(strip=True)
                 ret.append({'title': title, 'description': description})
         return ret
