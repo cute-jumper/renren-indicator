@@ -1,4 +1,4 @@
-* renren-indicator -- Send notifications when news comes out in Renren
+* Renren-indicator
 ** Overview
    Send notifications when news comes out in Renren.
    
@@ -8,6 +8,7 @@
 
    Run in terminal:
    : python renren-indicator.py
+
 
 ** TODO
 - Change the way to store user information. It should be both secure and user-friendly.
