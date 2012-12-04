@@ -9,8 +9,7 @@
    Run in terminal:
    : python renren-indicator.py
 
-
-** TODO
+** Things To Do
 - Change the way to store user information. It should be both secure and user-friendly.
 
        
