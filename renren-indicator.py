@@ -92,7 +92,7 @@ class RenrenIndicator(object):
     def do_update(self):
         homepage = self.login()
         news = self.parse_news(homepage)
-        for item in news:
+        for item in reversed(news):
             md5val = hashlib.md5(item['title'] + item['description']).hexdigest()
             if md5val not in self.cached:
                 self.cached.append(md5val)
