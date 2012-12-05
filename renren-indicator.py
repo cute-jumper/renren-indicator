@@ -19,7 +19,11 @@ from ConfigParser import ConfigParser
 app_dir = os.path.dirname(os.path.abspath(__file__)) # Remember to change here
 app_icon = os.path.join(app_dir, 'renren-indicator.jpg')
 app_setting_file = os.path.join(app_dir, '.user')
-image = 'file://' + app_icon
+app_icon_file = 'file://' + app_icon
+app_cache_dir = os.path.join(app_dir, 'cache')
+if not os.path.exists(app_cache_dir):
+    os.mkdir(app_cache_dir)
+    print '[Message]: mkdir', app_cache_dir
 
 class RenrenIndicator(object):
     def __init__(self, fn):
@@ -59,7 +63,7 @@ class RenrenIndicator(object):
         print '[Message]: Log in successful!'
         return homepage        
 
-    def send_notification(self, title, description):
+    def send_notification(self, title, description, image):
         """send feed updates to notify-osd"""
         pynotify.init(title)
         n = pynotify.Notification(title, description, image)
@@ -77,7 +81,13 @@ class RenrenIndicator(object):
                     attr = div.get('class', None)
                     if attr and ('content-main' in attr or 'content-main-big' in attr or 'rich-content-new' in attr):
                         description = div.get_text(strip=True)
-                ret.append({'title': title, 'description': description})
+                for img in article.aside.find_all('img'):
+                    image_path = os.path.join(app_cache_dir, article.aside.figure['data-name'] + ".jpg")
+                    if not os.path.exists(image_path):
+                        print 'Get image for', article.aside.figure['data-name']
+                        urllib.urlretrieve(img['src'], image_path)
+                ret.append({'title': title, 'description': description, 'image': image_path})
+        # sys.exit(0)
         return ret
     def do_update(self):
         homepage = self.login()
@@ -86,9 +96,10 @@ class RenrenIndicator(object):
             md5val = hashlib.md5(item['title'] + item['description']).hexdigest()
             if md5val not in self.cached:
                 self.cached.append(md5val)
-                self.send_notification(item['title'], item['description'])
+                self.send_notification(item['title'], item['description'], item['image'])
                 print 'title:', item['title']
                 print 'description:', item['description']
+                print 'image path:', item['image']
                 print
 
 if __name__ == "__main__":

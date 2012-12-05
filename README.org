@@ -12,7 +12,9 @@
    Or you can set the update interval by yourself. Default value is 300s.
    : python renren-indicator.py 1000
 
+
 ** Things To Do
 - Change the way to store user information. It should be both secure and user-friendly.
+
 
        
