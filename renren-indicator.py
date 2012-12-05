@@ -11,7 +11,7 @@ password = guesswhat
 realname = superman
 '''
 
-import urllib, urllib2, cookielib, datetime, json, glib, os, pynotify, hashlib, re, os
+import urllib, urllib2, cookielib, datetime, json, glib, os, pynotify, hashlib, re
 from bs4 import BeautifulSoup
 from ConfigParser import ConfigParser
 
