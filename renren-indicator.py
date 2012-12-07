@@ -82,9 +82,15 @@ class RenrenIndicator(object):
                     if attr and ('content-main' in attr or 'content-main-big' in attr or 'rich-content-new' in attr):
                         description = div.get_text(strip=True)
                 for img in article.aside.find_all('img'):
-                    image_path = os.path.join(app_cache_dir, article.aside.figure['data-name'] + ".jpg")
+                    try:
+                        print "[Message]: Try to use `title' in <img>..."
+                        image_name = img['title'] + ".jpg"
+                    except KeyError:
+                        print "[Message]: Try to use `data-name' in <figure>..."
+                        image_name = article.aside.figure['data-name'] + ".jpg"
+                    image_path = os.path.join(app_cache_dir, image_name)
                     if not os.path.exists(image_path):
-                        print 'Get image for', article.aside.figure['data-name']
+                        print '[Message]: Get image for', image_name
                         urllib.urlretrieve(img['src'], image_path)
                 ret.append({'title': title, 'description': description, 'image': image_path})
         # sys.exit(0)
