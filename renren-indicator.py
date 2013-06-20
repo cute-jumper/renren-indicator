@@ -74,7 +74,7 @@ class RenrenIndicator(object):
         soup = BeautifulSoup(re.sub('(?<=charset=)gb2312|gbk|gb18030', 'utf-8', homepage, flags=re.I))
         ret = []
         for article in soup.find_all('article'):
-            if 'a-feed' in article.get('class', []):
+            if 'a-feed' in article.get('class', []) and article.h3:
                 title = article.h3.get_text(strip=True)
                 description = ''
                 for div in article.find_all('div'):
