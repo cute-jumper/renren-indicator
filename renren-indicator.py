@@ -47,21 +47,38 @@ class RenrenIndicator(object):
         now = datetime.datetime.now()
         timestamp = str(now.year) + str(now.month) + str(now.day) + str(now.hour) + str(now.second) + str(now.microsecond/1000)
         posturl = 'http://www.renren.com/ajaxLogin/login?1=1&uniqueTimestamp=' + timestamp
-        postdata = urllib.urlencode({'email':self.email,
-                                     'password':self.password,
-                                     })        
-        req = urllib2.Request(url=posturl, data=postdata)
-        html = urllib2.urlopen(req).read()
-        # print html
-        data = json.loads(html)
-        print 'response:',data
+        data = self.get_response(posturl)
+        while data.get('failCode', 0) == 512:
+            print "Failed, try to retrieve the verification code..."
+            data = self.get_response(posturl, need_icode=True)
         homeurl = data.get('homeUrl', None)
-        if not homeurl:
+        if not homeurl or data.get('code') != True:
             print 'Log in error!'
             exit(0)
         homepage = urllib2.urlopen(homeurl).read()
         print '[Message]: Log in successful!'
         return homepage        
+    def get_response(self, posturl, need_icode=None):
+        if need_icode:
+            import random, cStringIO
+            from PIL import Image
+            icode_url = 'http://icode.renren.com/getcode.do?t=web_login&rnd=%f' %(random.random())
+            img = Image.open(cStringIO.StringIO(urllib2.urlopen(icode_url).read()))
+            img.show()
+            postdata = urllib.urlencode({'email':self.email,
+                                         'password':self.password,
+                                         'icode': raw_input("Verification code: "),
+                                         # Can not omit the following parameter!!!
+                                         'captcha_type': 'web_login',
+                                         })
+        else:
+            postdata = urllib.urlencode({'email':self.email,
+                                         'password':self.password,
+                                         })        
+        req = urllib2.Request(url=posturl, data=postdata)
+        html = urllib2.urlopen(req).read()
+        data = json.loads(html)
+        return data 
 
     def send_notification(self, title, description, image):
         """send feed updates to notify-osd"""
@@ -113,7 +130,7 @@ if __name__ == "__main__":
     interval = 5 * 60
     if len(sys.argv) == 2:
         interval = int(sys.argv[1])
-    print 'Update interval: %ds' %interval
+    print '[Message]: Update interval = %ds' %interval
     rd = RenrenIndicator(app_setting_file)
     while True:
         try:
