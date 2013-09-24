@@ -16,10 +16,8 @@ from bs4 import BeautifulSoup
 from ConfigParser import ConfigParser
 
 # App settings
-app_dir = os.path.dirname(os.path.abspath(__file__)) # Remember to change here
-app_icon = os.path.join(app_dir, 'renren-indicator.jpg')
+app_dir = os.path.dirname(os.path.abspath(__file__))
 app_setting_file = os.path.join(app_dir, '.user')
-app_icon_file = 'file://' + app_icon
 app_cache_dir = os.path.join(app_dir, 'cache')
 if not os.path.exists(app_cache_dir):
     os.mkdir(app_cache_dir)
@@ -52,8 +50,9 @@ class RenrenIndicator(object):
             print "Failed, try to retrieve the verification code..."
             data = self.get_response(posturl, need_icode=True)
         homeurl = data.get('homeUrl', None)
-        if not homeurl or data.get('code') != True:
+        if not homeurl or not data.get('code', False):
             print 'Log in error!'
+            print '[DEBUG]:', data
             exit(0)
         homepage = urllib2.urlopen(homeurl).read()
         print '[Message]: Log in successful!'
